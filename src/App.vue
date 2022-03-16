@@ -1,21 +1,54 @@
 <script setup>
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+import Grid from 'vue-virtual-scroll-grid'
+
+const currentScrollToIndex = ref()
+const scrollToIndex = ref(10)
+
+function setCurrentScrollToIndex (index) {
+  currentScrollToIndex.value = undefined
+  currentScrollToIndex.value = index
+}
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Hello Vue 3 + Vite" />
+  <div :class="$style.button">
+    <button class="scroll-to" @click="() => setCurrentScrollToIndex(scrollToIndex)">Scroll to</button>
+    <input type="number" v-model="scrollToIndex" />
+  </div>
+  <div :class="$style['grid-container']">
+    <Grid
+      :length="100"
+      :pageProvider="async (pageNumber, pageSize) => Array(pageSize).fill('x')"
+      :pageSize="40"
+      :scrollTo="currentScrollToIndex"
+      :class="$style.grid"
+    >
+      <template v-slot:default="{ item, index, style }">
+        <div :style="style" :class="$style['grid-item']">{{ item }}: {{ index }}</div>
+      </template>
+    </Grid>
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style module>
+.button {
+  margin: 100px 0;
+}
+.grid-container {
+  width: 100%;
+  height: 300px;
+  overflow: auto;
+}
+
+.grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 1rem;
+  border: 1px solid gray;
+}
+.grid-item {
+  border: 1px solid gray;
 }
 </style>
